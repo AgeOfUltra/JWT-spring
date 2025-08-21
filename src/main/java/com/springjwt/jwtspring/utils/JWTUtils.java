@@ -7,13 +7,15 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JWTUtils {
 
-    private static final long EXPIRY_DATE = 1000*60;
+    private static final long EXPIRY_DATE = 1000*60*30;
+    private  String jwtToken= "";
+
+    private boolean isAuthenticated= false;
 
     private final String SECRET = "Very-secret-key-unlock-0r-hack-the-application-f0r-tim3-taken@90908762312";
 
@@ -29,7 +31,7 @@ public class JWTUtils {
 * part 3: signature contains what is the secret key and hash algorithm.
 * */
 
-       return Jwts.builder()
+       String token= Jwts.builder()
 
                //payload
                 .setSubject(username)
@@ -39,7 +41,12 @@ public class JWTUtils {
                //signature
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+
+       jwtToken += token;
+       isAuthenticated=true;
+       return token;
     }
+
     public String getUserNameFromToken(String token){
         return extractorMethod(token).getSubject();
     }
@@ -54,5 +61,10 @@ public class JWTUtils {
 
     private boolean isTokenValid(String token) {
         return extractorMethod(token).getExpiration().before(new Date());
+    }
+
+    public String getSecretToken(){
+
+        return isAuthenticated ?  jwtToken : "please authenticate again";
     }
 }
