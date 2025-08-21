@@ -1,5 +1,6 @@
 package com.springjwt.jwtspring.utils;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -12,7 +13,7 @@ import java.util.Date;
 @Component
 public class JWTUtils {
 
-    private static final long EXPIRY_DATE = 1000*60*60;
+    private static final long EXPIRY_DATE = 1000*60;
 
     private final String SECRET = "Very-secret-key-unlock-0r-hack-the-application-f0r-tim3-taken@90908762312";
 
@@ -38,5 +39,20 @@ public class JWTUtils {
                //signature
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+    public String getUserNameFromToken(String token){
+        return extractorMethod(token).getSubject();
+    }
+
+    private Claims extractorMethod(String token){
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    public boolean validateToken(String username, String username1, String token) {
+        return username.equals(username1) && !isTokenValid(token) ;
+    }
+
+    private boolean isTokenValid(String token) {
+        return extractorMethod(token).getExpiration().before(new Date());
     }
 }
