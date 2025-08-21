@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class JWTUtils {
 
-    private static final long EXPIRY_DATE = 1000*60;
+    private static final long EXPIRY_DATE = 1000*60*10;
 
     private final String SECRET = "Very-secret-key-unlock-0r-hack-the-application-f0r-tim3-taken@90908762312";
 
