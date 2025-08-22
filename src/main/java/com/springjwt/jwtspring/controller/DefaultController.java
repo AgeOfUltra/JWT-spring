@@ -18,9 +18,7 @@ public class DefaultController {
     JWTUtils utils;
 
     @GetMapping("/weather")
-    public ModelAndView demoPage(HttpServletResponse response) {
-        String jwtToken = utils.getSecretToken();
-        response.setHeader("Authorization","Bearer " + jwtToken);
+    public ModelAndView demoPage() {
         return new ModelAndView("index"); // Note: no ".html"
     }
 }

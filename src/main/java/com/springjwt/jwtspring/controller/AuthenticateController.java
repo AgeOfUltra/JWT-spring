@@ -2,6 +2,8 @@ package com.springjwt.jwtspring.controller;
 
 import com.springjwt.jwtspring.pojo.AuthenticateRequest;
 import com.springjwt.jwtspring.utils.JWTUtils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +27,22 @@ public class AuthenticateController {
     JWTUtils  jwtUtils;
 
     @PostMapping("/authenticate") // this is an open request.
-    public ResponseEntity<String> authenticateUser(@RequestBody AuthenticateRequest request){
+    public ResponseEntity<String> authenticateUser(@RequestBody AuthenticateRequest request, HttpServletResponse response){
+
+        String token;
         try{
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
-            return ResponseEntity.ok(jwtUtils.generateToken(request.getUsername()));
+
+            //TODO save the jwt token in cookies.
+            token = jwtUtils.generateToken(request.getUsername());
+            Cookie cookie = new Cookie("JWT_TOKEN",token);
+            cookie.setPath("/app");
+            cookie.setHttpOnly(false);
+            cookie.setMaxAge(1800);
+            response.addCookie(cookie); 
+            return ResponseEntity.ok(token);
         }catch (Exception e){
 //            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

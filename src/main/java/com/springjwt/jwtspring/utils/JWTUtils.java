@@ -13,9 +13,6 @@ import java.util.Date;
 public class JWTUtils {
 
     private static final long EXPIRY_DATE = 1000*60*30;
-    private  String jwtToken= "";
-
-    private boolean isAuthenticated= false;
 
     private final String SECRET = "Very-secret-key-unlock-0r-hack-the-application-f0r-tim3-taken@90908762312";
 
@@ -41,9 +38,6 @@ public class JWTUtils {
                //signature
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
-       jwtToken += token;
-       isAuthenticated=true;
        return token;
     }
 
@@ -63,8 +57,4 @@ public class JWTUtils {
         return extractorMethod(token).getExpiration().before(new Date());
     }
 
-    public String getSecretToken(){
-
-        return isAuthenticated ?  jwtToken : "please authenticate again";
-    }
 }
