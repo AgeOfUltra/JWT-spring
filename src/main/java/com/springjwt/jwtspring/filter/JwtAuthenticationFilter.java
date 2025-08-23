@@ -3,6 +3,7 @@ package com.springjwt.jwtspring.filter;
 import com.springjwt.jwtspring.utils.JWTUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +33,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // we  need to extract the jwt token from the request.
 
-        String authorization = request.getHeader("Authorization");
+         String authorization = request.getHeader("Authorization");
         String token = null;
         String username = null;
+
+
+//     TODO : need to get the cookies
+        Cookie[] cookies = request.getCookies();
+        if(cookies!=null)
+        {
+            for (Cookie cookie : cookies) {
+                if(cookie.getName().equals("JWT_TOKEN")){
+                    token =  cookie.getValue();
+                    break;
+                }
+            }
+        }
         if(authorization!=null && authorization.startsWith("Bearer ")){
             token = authorization.substring(7);
             username = utils.getUserNameFromToken(token);
 
+        }else if(authorization== null && token !=null){
+            username = utils.getUserNameFromToken(token);
         }
+
 
         //TODO : validate the token
         if(username!= null && SecurityContextHolder.getContext().getAuthentication()==null){
